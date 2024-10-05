@@ -1,35 +1,36 @@
-const myIterration = { from: 1, to: 10 };
+const myIterable = { from: 1, to: 4 };
 
-function iteration(obj) {
-  let from = obj.from;
-  let to = obj.to;
-
-  if (to < from) {
-    throw new Error("TO must be '>' then FROM");
-  }
-
-  if (typeof from !== "number") {
-    throw new Error("invalid starting point");
-  }
-
-  if (typeof to !== "number") {
-    throw new Error("invalid ending point");
-  }
-
-  if(from === to) {
-    throw new Error("there is no range between FROM and TO")
-  }
-
-  //in case if starting point is 0 i decided to start with 0 (even it isnt natural number)
-  if (from === 0) {
-    for (let i = 0; i < to; i++) {
-      console.log(i);
+const iteration = {
+  [Symbol.iterator](it = myIterable.to) {
+    if (myIterable.to < myIterable.from) {
+      throw new Error("TO must be '>' then FROM");
     }
-  } else {
-    for (let i = 0; i < to; i++) {
-      console.log(i + 1);
+
+    if (typeof myIterable.from !== "number") {
+      throw new Error("invalid starting point");
     }
-  }
+
+    if (typeof myIterable.to !== "number") {
+      throw new Error("invalid ending point");
+    }
+
+    if (myIterable.from === myIterable.to) {
+      throw new Error("there is no range between FROM and TO");
+    }
+
+    let i = 0;
+    return {
+      next() {
+        if (i < it) {
+          return { value: ++i, done: false };
+        }
+
+        return { value: undefined, done: true };
+      },
+    };
+  },
+};
+
+for (let item of iteration) {
+  console.log(item); // 1, 2, 3, 4
 }
-
-iteration(myIterration);
