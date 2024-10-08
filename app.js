@@ -34,3 +34,36 @@ const iteration = {
 for (let item of iteration) {
   console.log(item); // 1, 2, 3, 4
 }
+
+console.log(
+  "--------------------------> TASK 2 <--------------------------------"
+);
+
+function Person(name, age) {
+  this.name = name;
+  this.age = age;
+}
+
+function getPersons(name, age) {
+  const res = [];
+
+  const personByConstructor = new Person(name, age);
+  const personByLiteral = {
+    name,
+    age,
+  };
+
+  const toJSON = JSON.stringify(personByLiteral);
+
+  res.push(
+    personByConstructor,
+    personByLiteral,
+    Object.assign({}, personByLiteral),
+    Object.create({}, { name: { value: name }, age: { value: age } }),
+    JSON.parse(toJSON)
+  );
+
+  return res;
+}
+
+console.log(getPersons("dave", 26));
