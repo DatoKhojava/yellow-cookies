@@ -3,8 +3,9 @@ class Calculator {
   #_numberY;
 
   constructor(x, y) {
-    if (typeof x !== "number" || typeof y !== "number")
+    if (typeof x !== "number" || typeof y !== "number") {
       throw new Error("Inputed values must be numbers");
+    }
     this.#_numberX = x;
     this.#_numberY = y;
     this.logSum = this.logSum.bind(this);
