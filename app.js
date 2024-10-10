@@ -1,69 +1,61 @@
-const myIterable = { from: 1, to: 4 };
+class Calculator {
+  #_numberX;
+  #_numberY;
 
-const iteration = {
-  [Symbol.iterator](it = myIterable.to) {
-    if (myIterable.to < myIterable.from) {
-      throw new Error("TO must be '>' then FROM");
+  constructor(x, y) {
+    if (typeof x !== "number" || typeof y !== "number")
+      throw new Error("Inputed values must be numbers");
+    this.#_numberX = x;
+    this.#_numberY = y;
+    this.logSum = this.logSum.bind(this);
+  }
+
+  get numberX() {
+    return this.#_numberX;
+  }
+
+  set numberX(val) {
+    if (typeof val !== "number") {
+      throw new Error("Value of X must be String!");
+    } else {
+      this.#_numberX = val;
     }
+  }
 
-    if (typeof myIterable.from !== "number") {
-      throw new Error("invalid starting point");
+  get numberY() {
+    return this.#_numberY;
+  }
+
+  set numberY(val) {
+    if (typeof val !== "number") {
+      throw new Error("Value of Y must be String!");
+    } else {
+      this.#_numberY = val;
     }
+  }
 
-    if (typeof myIterable.to !== "number") {
-      throw new Error("invalid ending point");
-    }
+  logSum() {
+    return this.#_numberX + this.#_numberY;
+  }
 
-    if (myIterable.from === myIterable.to) {
-      throw new Error("there is no range between FROM and TO");
-    }
+  logMul() {
+    return this.#_numberX - this.#_numberY;
+  }
 
-    let i = 0;
-    return {
-      next() {
-        if (i < it) {
-          return { value: ++i, done: false };
-        }
+  logSub() {
+    return this.#_numberX * this.#_numberY;
+  }
 
-        return { value: undefined, done: true };
-      },
-    };
-  },
-};
-
-for (let item of iteration) {
-  console.log(item); // 1, 2, 3, 4
+  logDiv() {
+    return this.#_numberX / this.#_numberY;
+  }
 }
 
-console.log(
-  "--------------------------> TASK 2 <--------------------------------"
-);
+const calculator = new Calculator(4, 6);
+console.log(calculator.logSum());
 
-function Person(name, age) {
-  this.name = name;
-  this.age = age;
-}
+calculator.numberX = 10;
+console.log(calculator.logDiv());
 
-function getPersons(name, age) {
-  const res = [];
-
-  const personByConstructor = new Person(name, age);
-  const personByLiteral = {
-    name,
-    age,
-  };
-
-  const toJSON = JSON.stringify(personByLiteral);
-
-  res.push(
-    personByConstructor,
-    personByLiteral,
-    Object.assign({}, personByLiteral),
-    Object.create({}, { name: { value: name }, age: { value: age } }),
-    JSON.parse(toJSON)
-  );
-
-  return res;
-}
-
-console.log(getPersons("dave", 26));
+const logSumRef = calculator.logSum;
+console.log("sum is =", logSumRef());
