@@ -1,125 +1,57 @@
-// Stack with array
-// class Stack {
-//   constructor() {
-//     this.items = [];
-//   }
+class DataHandler {
+  #URL = `https://jsonplaceholder.typicode.com`;
 
-//   push(item) {
-//     this.items.push(item);
-//   }
+  constructor() {
+    this.posts = [];
+  }
 
-//   pop() {
-//     if (this.items.length === 0) {
-//       return "Stack is empty";
-//     }
-//     return this.items.pop();
-//   }
+  async fetchPosts() {
+    try {
+      const response = await fetch(`${this.#URL}/posts`);
 
-//   peek() {
-//     if (this.items.length === 0) {
-//       return "Stack is empty";
-//     }
-//     return this.items[this.items.length - 1];
-//   }
+      if (!response.ok) {
+        throw new Error(`Response status: ${response.status}`);
+      }
 
-//   isEmpty() {
-//     return this.items.length == 0;
-//   }
+      const data = await response.json();
 
-//   printStack() {
-//     return this.items.map((item) => item);
-//   }
-// }
+      data.map((post) => this.posts.push(post));
 
-// ---------------------------------------------------------------------
+      return Promise.resolve(this.posts);
+    } catch (error) {
+      return Promise.reject("Something went wrong ", error);
+    }
+  }
 
-class Node {
-  constructor(value) {
-    this.value = value;
-    this.next = null;
+  listPosts() {
+    if (this.posts.length > 0) {
+      return this.posts.sort(function (a, b) {
+        return a.title.localeCompare(b.title);
+      });
+    }
+
+    return "There is no recors in Posts arrya, its seems you deleted it, try to fetch one more time!";
+  }
+
+  getPost(id) {
+    if (this.posts.length > 0) {
+      return this.posts.find((post) => post.id === id);
+    }
+
+    return "There is no recors in Posts arrya, its seems you deleted it, try to fetch one more time!";
+  }
+
+  clearPosts() {
+    return (this.posts = []);
   }
 }
 
-class Stack {
-  constructor(maxSize = 10) {
-    if (typeof maxSize !== "number" || maxSize <= 0) {
-      throw new Error("Max size must be a positive integer.");
-    }
+(async () => {
+  const data = new DataHandler();
 
-    this.maxSize = maxSize;
-    this.top = null;
-    this.size = 0;
-  }
-
-  push(item) {
-    if (this.size >= this.maxSize) {
-      throw new Error("Stack is full.");
-    }
-
-    const newNode = new Node(item);
-    newNode.next = this.top;
-    this.top = newNode;
-    this.size++;
-  }
-
-  pop() {
-    if (this.isEmpty()) {
-      throw new Error("Stack is empty.");
-    }
-
-    const poppedValue = this.top.value;
-    this.top = this.top.next;
-    this.size--;
-
-    return poppedValue;
-  }
-
-  peek() {
-    if (this.top) {
-      return this.top.value;
-    }
-
-    return null;
-  }
-
-  isEmpty() {
-    return this.size === 0;
-  }
-
-  toArray() {
-    const elements = [];
-    let current = this.top;
-
-    while (current) {
-      elements.push(current.value);
-      current = current.next;
-    }
-
-    return elements;
-  }
-
-  static fromIterable(iterable) {
-    if (typeof iterable[Symbol.iterator] !== "function") {
-      throw new Error("Provided entity is not iterable.");
-    }
-
-    const stack = new Stack(iterable.length);
-
-    for (const item of iterable) {
-      stack.push(item);
-    }
-
-    return stack;
-  }
-}
-
-const stack = new Stack(5);
-stack.push(10);
-stack.push(20);
-stack.push(30);
-console.log(stack.peek());
-console.log(stack.pop());
-console.log(stack.toArray());
-
-const iterableStack = Stack.fromIterable([40, 50, 60]);
-console.log(iterableStack.toArray());
+  await data.fetchPosts();
+  console.log(data.listPosts());
+  console.log(data.getPost(30));
+  data.clearPosts();
+  console.log(data.listPosts());
+})();
